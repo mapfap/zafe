@@ -1,0 +1,13 @@
+{
+  "type": "module",
+  "name": "zafe",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dayjs": "^1.11.2",
+    "selenium-webdriver": "^4.1.2"
+  }
+}
