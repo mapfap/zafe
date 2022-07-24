@@ -1,16 +1,24 @@
 {
   "type": "module",
   "name": "zafe",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "src/index.js",
-  "author": "",
+  "author": "mapfap",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "dayjs": "^1.11.2",
     "selenium-webdriver": "^4.1.2"
   },
   "scripts": {
     "test": "node test/index.js"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mapfap/zafe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mapfap/zafe/issues"
+  },
+  "homepage": "https://github.com/mapfap/zafe#readme",
+  "description": ""
 }
