@@ -1,6 +1,6 @@
-import { until } from "selenium-webdriver"
-import dayjs from "dayjs"
-import fs from "fs"
+import { until } from 'selenium-webdriver'
+import dayjs from 'dayjs'
+import fs from 'fs'
 
 const DriverAction = {
     click: 1,
@@ -17,6 +17,7 @@ export class Zafe {
     waitForElement = 5000
     shouldCaptureOnSuccess = false
     shouldLogTraces = true
+    screenCaptureFolder = './screenshots'
 
     constructor(driver, options = {}) {
         this.driver = driver;
@@ -24,20 +25,13 @@ export class Zafe {
         this.afterActionPause = options.afterActionPause ?? this.afterActionPause
         this.waitForElement = options.waitForElement ?? this.waitForElement
         this.shouldLogTraces = options.shouldLogTraces ?? this.shouldLogTraces
+        this.screenCaptureFolder = options.screenCaptureFolder ?? this.screenCaptureFolder
         this.shouldCaptureOnSuccess = options.shouldCaptureOnSuccess ?? this.shouldCaptureOnSuccess
-    }
 
-    // async find(element) {
-    //     try {
-    //         await this.driver.wait(until.elementLocated(element), this.waitForElement);
-    //         this.logTraces(`[Found] ${element}`)
-    //     } catch (err) {
-    //         if (err.name === "TimeoutError") {
-    //             this.logErrors(`[NotFound] ${element}`)
-    //         }
-    //         throw err
-    //     }
-    // }
+        if (!fs.existsSync(this.screenCaptureFolder)) {
+            fs.mkdirSync(this.screenCaptureFolder, { recursive: true })
+        }
+    }
 
     async retryStalable(element, driverAction, text) {
         const lastAttemptNo = 3
@@ -53,7 +47,7 @@ export class Zafe {
                         await stalableElement.sendKeys(text)
                         break;
                     case DriverAction.scroll:
-                        this.driver.executeScript("arguments[0].scrollIntoView()", stalableElement)
+                        this.driver.executeScript('arguments[0].scrollIntoView()', stalableElement)
                         break;
                     case DriverAction.getValue:
                         return await stalableElement.getAttribute('value')
@@ -62,7 +56,7 @@ export class Zafe {
                 }
                 return true
             } catch (err) {
-                if (err.name === "StaleElementReferenceError") {
+                if (err.name === 'StaleElementReferenceError') {
                     this.logErrors(`[Staled] ${element} on attempt#${attemptNo}`)
                     if (attemptNo >= lastAttemptNo) {
                         throw err
@@ -88,7 +82,7 @@ export class Zafe {
                 await this.capture()
             }
         } catch (err) {
-            if (err.name === "TimeoutError") {
+            if (err.name === 'TimeoutError') {
                 this.logErrors(`[NotFound] ${element}`)
                 await this.capture()
             }
@@ -112,7 +106,7 @@ export class Zafe {
                 await this.capture()
             }
         } catch (err) {
-            if (err.name === "TimeoutError") {
+            if (err.name === 'TimeoutError') {
                 this.logErrors(`[NotFound] ${element}`)
                 await this.capture()
             }
@@ -123,8 +117,8 @@ export class Zafe {
     async capture() {
         const image = await this.driver.takeScreenshot()
         const fileName = dayjs().format('YYYYMMDD-HHmmss-SSS')
-        const filePath = `./screenshots/${fileName}.png`
-        await fs.writeFileSync(filePath, image, 'base64')
+        const filePath = `${this.screenCaptureFolder}/${fileName}.png`
+        fs.writeFileSync(filePath, image, 'base64')
         this.logTraces(`[Captured] ${filePath}`)
     }
 
