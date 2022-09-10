@@ -6,7 +6,8 @@ const DriverAction = {
     click: 1,
     type: 2,
     scroll: 3,
-    getValue: 4
+    getValue: 4,
+    upload:5
 }
 
 export class Zafe {
@@ -51,6 +52,8 @@ export class Zafe {
                         break;
                     case DriverAction.getValue:
                         return await stalableElement.getAttribute('value')
+                    case DriverAction.upload:
+                        await stalableElement.sendKeys(text)
                     default:
                         throw new Error(`[Code] Unknown DriverAction ${driverAction}`)
                 }
@@ -102,6 +105,27 @@ export class Zafe {
             if (text != typedText) {
                 throw new Error(`[WrongTyped] Expected ${text} but got ${typedText}`)
             }
+            if (this.shouldCaptureOnSuccess) {
+                await this.capture()
+            }
+        } catch (err) {
+            if (err.name === 'TimeoutError') {
+                this.logErrors(`[NotFound] ${element}`)
+                await this.capture()
+            }
+            throw err
+        }
+    }
+
+    async uploadFile(element, filePath) {
+        try {
+            this.logTraces(`[Preparing] ${element}`)
+            await this.retryStalable(element, DriverAction.scroll)
+            await this.driver.sleep(this.afterScrollPause)
+            this.logTraces(`[ReadyToBeUploaded] ${element}`)
+            await this.retryStalable(element, DriverAction.upload, filePath)
+            this.logTraces(`[Uploaded] ${element}`)
+            await this.driver.sleep(this.afterActionPause)
             if (this.shouldCaptureOnSuccess) {
                 await this.capture()
             }
