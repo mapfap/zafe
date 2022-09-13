@@ -54,6 +54,7 @@ export class Zafe {
                         return await stalableElement.getAttribute('value')
                     case DriverAction.upload:
                         await stalableElement.sendKeys(text)
+                        break;
                     default:
                         throw new Error(`[Code] Unknown DriverAction ${driverAction}`)
                 }
